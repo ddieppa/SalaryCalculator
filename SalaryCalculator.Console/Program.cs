@@ -1,29 +1,23 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SalaryCalculator.Console;
 using SalaryCalculator.Services;
 using Spectre.Console;
 using Rule = Spectre.Console.Rule;
 
-
 var services = new ServiceCollection();
 services.AddSingleton<ISalaryCalculatorService, SalaryCalculatorService>();
-
 var serviceProvider = services.BuildServiceProvider();
 var salaryCalculatorService = serviceProvider.GetService<ISalaryCalculatorService>();
 
-var ruleTitle = new Rule("[yellow]Salary Calculator[/]").RuleStyle("blue");
+DisplayRule();
 
-AnsiConsole.Write(ruleTitle);
-
-const string annualSalaryFromHourlyWage = "Annual salary from hourly wage";
-const string hourlyWageFromAnnualSalary = "Hourly wage from annual salary";
 var choice = AnsiConsole.Prompt(
-        new SelectionPrompt<string>()
-                .Title("What would you like to calculate?")
-                .PageSize(10)
-                .AddChoices(annualSalaryFromHourlyWage,
-                            hourlyWageFromAnnualSalary));
+    new SelectionPrompt<string>()
+        .Title(Constants.CalculateTitle)
+        .PageSize(10)
+        .AddChoices(Constants.AnnualSalaryFromHourlyWage, Constants.HourlyWageFromAnnualSalary));
 
-if (choice == annualSalaryFromHourlyWage)
+if (choice == Constants.AnnualSalaryFromHourlyWage)
 {
     ShowAnnualFromHourly();
 }
@@ -32,29 +26,31 @@ else
     ShowHourlyFromAnnual();
 }
 
+void DisplayRule()
+{
+    var salaryCalculatorRule = new Rule(Constants.RuleTitle).RuleStyle(Constants.RuleStyle);
+    AnsiConsole.Write(salaryCalculatorRule);
+}
+
 void ShowAnnualFromHourly()
 {
-    var hourlyWage = AnsiConsole.Ask<double>("Enter your [green]hourly wage[/] (in dollars):");
-    var hoursPerWeek = AnsiConsole.Ask("Enter the number of [green]hours per week[/] (default: 40):", 40);
-    var weeksPerYear = AnsiConsole.Ask("Enter the number of [green]weeks per year[/] you work (default: 52):", 52);
+    var hourlyWage = AnsiConsole.Ask<double>(Constants.EnterHourlyWagePrompt);
+    var hoursPerWeek = PromptHoursPerWeek();
+    var weeksPerYear = PromptWeeksPerYear();
 
-    var annualSalary = salaryCalculatorService.CalculateAnnualSalaryFromHourlyWage(hourlyWage,
-                                                           hoursPerWeek,
-                                                           weeksPerYear);
-
-    AnsiConsole.MarkupLine($"Your [green]annual salary[/] is: [yellow]${annualSalary:N2}[/]");
+    var annualSalary = salaryCalculatorService.CalculateAnnualSalaryFromHourlyWage(hourlyWage, hoursPerWeek, weeksPerYear);
+    AnsiConsole.MarkupLine(string.Format(Constants.AnnualSalaryResultFormat, annualSalary));
 }
 
 void ShowHourlyFromAnnual()
 {
-    var annualSalary = AnsiConsole.Ask<double>("Enter your [green]annual salary[/] (in dollars):");
-    var hoursPerWeek = AnsiConsole.Ask("Enter the number of [green]hours per week[/] (default: 40):", 40);
-    var weeksPerYear = AnsiConsole.Ask("Enter the number of [green]weeks per year[/] you work (default: 52):", 52);
+    var annualSalary = AnsiConsole.Ask<double>(Constants.EnterAnnualSalaryPrompt);
+    var hoursPerWeek = PromptHoursPerWeek();
+    var weeksPerYear = PromptWeeksPerYear();
 
-    var hourlyWage = salaryCalculatorService.CalculateHourlyWageFromAnnualSalary(annualSalary,
-                                                         hoursPerWeek,
-                                                         weeksPerYear);
-
-    AnsiConsole.MarkupLine($"Your [green]hourly wage[/] is: [yellow]${hourlyWage:N2}[/]");
+    var hourlyWage = salaryCalculatorService.CalculateHourlyWageFromAnnualSalary(annualSalary, hoursPerWeek, weeksPerYear);
+    AnsiConsole.MarkupLine(string.Format(Constants.HourlyWageResultFormat, hourlyWage));
 }
 
+int PromptHoursPerWeek() => AnsiConsole.Ask(string.Format(Constants.EnterHoursPerWeekPrompt, Constants.DefaultHoursPerWeek), Constants.DefaultHoursPerWeek);
+int PromptWeeksPerYear() => AnsiConsole.Ask(string.Format(Constants.EnterWeeksPerYearPrompt, Constants.DefaultWeeksPerYear), Constants.DefaultWeeksPerYear);
