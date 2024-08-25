@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NSubstitute;
-using SalaryCalculator.Console;
+using SalaryCalculator.Services;
 using Xunit;
 
 namespace SalaryCalculator.Tests

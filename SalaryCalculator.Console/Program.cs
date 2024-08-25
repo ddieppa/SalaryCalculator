@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SalaryCalculator.Console;
+using SalaryCalculator.Services;
 using Spectre.Console;
 using Rule = Spectre.Console.Rule;
 
-// var salaryCalculatorService = new SalaryCalculatorService();
 
 var services = new ServiceCollection();
 services.AddSingleton<ISalaryCalculatorService, SalaryCalculatorService>();
@@ -15,8 +14,8 @@ var ruleTitle = new Rule("[yellow]Salary Calculator[/]").RuleStyle("blue");
 
 AnsiConsole.Write(ruleTitle);
 
-var annualSalaryFromHourlyWage = "Annual salary from hourly wage";
-var hourlyWageFromAnnualSalary = "Hourly wage from annual salary";
+const string annualSalaryFromHourlyWage = "Annual salary from hourly wage";
+const string hourlyWageFromAnnualSalary = "Hourly wage from annual salary";
 var choice = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
                 .Title("What would you like to calculate?")

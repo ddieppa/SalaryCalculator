@@ -1,4 +1,4 @@
-﻿namespace SalaryCalculator.Console;
+﻿namespace SalaryCalculator.Services;
 
 public interface ISalaryCalculatorService
 {
